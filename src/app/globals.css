@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ─── SIDEO Design Token — CSS Custom Properties ─────────────────────────── */
+
+:root {
+  /* Colores Principales */
+  --primary: #1e3a8a;
+  --primary-fg: #ffffff;
+  --secondary: #e0e7ff;
+  --secondary-fg: #1e3a8a;
+  --destructive: #dc2626;
+
+  /* Superficies y UI */
+  --background: #f3f4f6;
+  --foreground: #111827;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --muted-fg: #6b7280;
+
+  /* Sidebar */
+  --sidebar: #1e3a8a;
+  --sidebar-fg: #ffffff;
+  --sidebar-accent: #2563eb;
+  --sidebar-border: #1e40af;
+
+  /* Colores Semánticos (Estado) */
+  --success-bg: #dcfce7;
+  --success-fg: #22c55e;
+  --warning-bg: #fef3c7;
+  --warning-fg: #f59e0b;
+  --danger-bg: #fee2e2;
+  --danger-fg: #dc2626;
+  --info-bg: #dbeafe;
+  --info-fg: #2563eb;
+
+  /* Evaluación ROSA — Niveles de Riesgo */
+  --rosa-low: #22c55e;
+  --rosa-medium: #f59e0b;
+  --rosa-high: #f97316;
+  --rosa-very-high: #dc2626;
+}
+
+.dark {
+  /* Colores Principales */
+  --primary: #2563eb;
+  --primary-fg: #ffffff;
+  --secondary: #182938;
+  --secondary-fg: #93c5fd;
+  --destructive: #ef4444;
+
+  /* Superficies y UI */
+  --background: #0f172a;
+  --foreground: #e5e7eb;
+  --card: #1e293b;
+  --border: #334155;
+  --muted-fg: #94a3b8;
+
+  /* Sidebar */
+  --sidebar: #0f172a;
+  --sidebar-fg: #e5e7eb;
+  --sidebar-accent: #1e293b;
+  --sidebar-border: #334155;
+}
+
+/* ─── Tailwind v4 @theme — expone variables como utilidades Tailwind ─────── */
+
+@theme inline {
+  /* Fuente */
+  --font-sans: var(--font-inter);
+
+  /* Colores Principales */
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-secondary: var(--secondary);
+  --color-secondary-fg: var(--secondary-fg);
+  --color-destructive: var(--destructive);
+
+  /* Superficies y UI */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted-fg: var(--muted-fg);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-fg: var(--sidebar-fg);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+
+  /* Semánticos */
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-fg: var(--warning-fg);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
+
+  /* ROSA */
+  --color-rosa-low: var(--rosa-low);
+  --color-rosa-medium: var(--rosa-medium);
+  --color-rosa-high: var(--rosa-high);
+  --color-rosa-very-high: var(--rosa-very-high);
+}
+
+/* ─── Estilos Base ────────────────────────────────────────────────────────── */
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), "Inter", sans-serif;
+}
