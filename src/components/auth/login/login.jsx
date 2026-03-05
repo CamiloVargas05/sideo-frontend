@@ -1,4 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
 /* ── Ilustración ergonómica SVG ── */
 function ErgonomicIllustration() {
@@ -38,6 +44,47 @@ function ErgonomicIllustration() {
 }
 
 export default function Login() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data?.message ?? "Credenciales inválidas. Intente nuevamente.");
+        return;
+      }
+
+      // Persistir token según "Recordar sesión"
+      if (remember) {
+        localStorage.setItem("token", data.token);
+      } else {
+        sessionStorage.setItem("token", data.token);
+      }
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      router.push("/dashboard");
+    } catch {
+      setError("No se pudo conectar con el servidor. Verifique su conexión.");
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="min-h-screen flex">
 
@@ -84,7 +131,16 @@ export default function Login() {
       </div>
 
       {/* ── Panel derecho (formulario) ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-background">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-background relative">
+        {/* Botón volver */}
+        <Link href="/"
+          className="absolute top-6 left-6 flex items-center gap-1.5 text-muted-fg hover:text-foreground text-sm font-medium transition-colors group">
+          <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Volver
+        </Link>
+
         <div className="w-full max-w-md flex flex-col gap-8">
 
           {/* Ilustración + marca */}
@@ -102,7 +158,7 @@ export default function Login() {
           </div>
 
           {/* Form */}
-          <form className="flex flex-col gap-5">
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-foreground" htmlFor="email">
                 Correo Electrónico
@@ -111,6 +167,9 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="nombre@empresa.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-border rounded-xl px-4 py-3 text-sm bg-secondary/40 text-foreground placeholder:text-muted-fg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors"
               />
             </div>
@@ -123,6 +182,9 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-border rounded-xl px-4 py-3 text-sm bg-secondary/40 text-foreground placeholder:text-muted-fg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors"
               />
             </div>
@@ -130,7 +192,12 @@ export default function Login() {
             {/* Recordar + olvidé */}
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input type="checkbox" className="w-4 h-4 rounded border-border accent-primary" />
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="w-4 h-4 rounded border-border accent-primary"
+                />
                 <span className="text-sm text-muted-fg">Recordar sesión</span>
               </label>
               <Link href="/auth/olvide-contrasena" className="text-sm text-primary hover:underline font-medium">
@@ -138,11 +205,28 @@ export default function Login() {
               </Link>
             </div>
 
+            {/* Error */}
+            {error && (
+              <div className="flex items-center gap-2 bg-danger-bg text-danger-fg text-sm px-4 py-3 rounded-xl border border-danger-fg/20">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-primary text-primary-fg font-bold py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all text-sm shadow-lg shadow-primary/25"
+              disabled={loading}
+              className="w-full bg-primary text-primary-fg font-bold py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all text-sm shadow-lg shadow-primary/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Iniciar Sesión
+              {loading && (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+              )}
+              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </button>
           </form>
 
