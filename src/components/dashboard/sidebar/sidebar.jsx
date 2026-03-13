@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Building2,
@@ -9,6 +10,7 @@ import {
   FileText,
   ChevronDown,
   Settings,
+  LogOut,
 } from "lucide-react";
 
 const navGroups = [
@@ -42,6 +44,15 @@ const navGroups = [
 ];
 
 export default function Sidebar({ activeSection, onNavigate }) {
+  const router = useRouter();
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/auth/login");
+  }
+
   return (
     <aside className="w-64 bg-sidebar flex flex-col h-screen shrink-0">
       {/* Logo */}
@@ -104,6 +115,14 @@ export default function Sidebar({ activeSection, onNavigate }) {
             <p className="text-sidebar-fg/50 text-xs truncate">admin@ergocheck.com</p>
           </div>
           <ChevronDown size={14} className="text-sidebar-fg/50 shrink-0" />
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="w-full mt-2 flex items-center gap-2.5 text-sm font-medium text-sidebar-fg/75 hover:text-sidebar-fg hover:bg-white/10 rounded-xl px-3 py-2.5 transition-colors"
+        >
+          <LogOut size={16} className="shrink-0" />
+          Cerrar sesión
         </button>
       </div>
     </aside>
