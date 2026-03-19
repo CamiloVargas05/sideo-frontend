@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { showToast } from "nextjs-toast-notify";
 import { Plus, Search, ChevronLeft, ArrowRight, Lightbulb } from "lucide-react";
-
-/* ─── Data ──────────────────────────────────────────────────────────────── */
-const evaluaciones = [
-  { id: "ROSA-001", empleado: "Ana García",   area: "Contabilidad", fecha: "12/02/2026", nivel: "Medio",    score: 4.2 },
-  { id: "ROSA-002", empleado: "Luis Torres",  area: "TI",           fecha: "10/02/2026", nivel: "Bajo",     score: 2.0 },
-  { id: "ROSA-003", empleado: "Pedro Ruiz",   area: "Operaciones",  fecha: "08/02/2026", nivel: "Alto",     score: 6.5 },
-  { id: "ROSA-004", empleado: "Rosa Mendoza", area: "RRHH",         fecha: "05/02/2026", nivel: "Muy Alto", score: 7.5 },
-];
+import { useEvaluacionesRosa } from "@/hooks/dashboard/evaluacionesRosa/useEvaluacionesRosa";
 
 const nivelBadge = {
   Bajo:       "bg-rosa-low text-white",
@@ -312,11 +305,10 @@ function HelpCircle({ size, className }) {
 
 /* ─── Main List View ─────────────────────────────────────────────────────── */
 export default function EvaluacionesRosa() {
-  const [view, setView]             = useState("list"); // "list" | "wizard" | "result"
-  const [wizardData, setWizardData] = useState(null);
-
-  const handleVerResultado = () => setView("result-preview");
-  const handleNueva        = ()   => setView("wizard");
+  const {
+    evaluaciones, view, setView,
+    wizardData, handleNueva, handleFinishWizard, handleVerResultado,
+  } = useEvaluacionesRosa();
 
   if (view === "wizard") {
     return (
@@ -332,7 +324,7 @@ export default function EvaluacionesRosa() {
         </div>
         <div className="flex-1 px-8 py-6">
           <Wizard
-            onFinish={(data) => { setWizardData(data); setView("result"); }}
+            onFinish={handleFinishWizard}
             onCancel={() => setView("list")}
           />
         </div>
