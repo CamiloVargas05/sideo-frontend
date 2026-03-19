@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+import { useApi } from "@/hooks/useApi";
 
 /* ── Ícono: ojo abierto ── */
 function IconEyeOpen() {
@@ -100,6 +99,7 @@ function BrandPanel() {
 /* ── Componente principal ── */
 export default function Login() {
   const router = useRouter();
+  const { apiUrl } = useApi();
 
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +114,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

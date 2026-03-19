@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+import { useApi } from "@/hooks/useApi";
 
 const DEFAULT_PROFILE = {
   firstName: "",
@@ -18,6 +17,7 @@ const DEFAULT_PROFILE = {
 
 export default function CompletarPerfil() {
   const router = useRouter();
+  const { apiUrl } = useApi();
   const [form, setForm] = useState(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,7 +57,7 @@ export default function CompletarPerfil() {
       const token = localStorage.getItem("token") ?? sessionStorage.getItem("token");
 
       if (token) {
-        const response = await fetch(`${API_URL}/auth/complete-profile`, {
+        const response = await fetch(`${apiUrl}/auth/complete-profile`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
