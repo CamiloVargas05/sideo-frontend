@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useApi } from "@/hooks/useApi";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
 /* ── Panel izquierdo ── */
 function BrandPanel() {
@@ -114,7 +115,6 @@ const STEPS = ["Empresa", "Administrador", "Plan"];
 
 export default function Registro() {
   const router = useRouter();
-  const { apiUrl } = useApi();
   const [step, setStep] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -158,7 +158,7 @@ export default function Registro() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/auth/register`, {
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
