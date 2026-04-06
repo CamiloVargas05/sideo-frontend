@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
@@ -21,6 +21,14 @@ export function useCompletarPerfil() {
   const [form, setForm]       = useState(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
+
+  // Verificar si el usuario es SUPER_ADMIN y redirigir al dashboard
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    if (storedUser.role === "super_admin") {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const initials = useMemo(() => {
     const f = form.firstName?.trim()?.charAt(0) ?? "";
