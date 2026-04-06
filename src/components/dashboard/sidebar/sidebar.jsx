@@ -7,7 +7,6 @@ import {
   Users,
   UserCheck,
   ClipboardList,
-  FileText,
   ChevronDown,
   Settings,
   LogOut,
@@ -33,7 +32,6 @@ const navGroups = [
     label: "Evaluación",
     items: [
       { label: "Evaluación ROSA", section: "evaluaciones-rosa", icon: ClipboardList },
-      { label: "Reportes",        section: "reportes",          icon: FileText, roles: ["admin", "super_admin"] },
     ],
   },
   {
