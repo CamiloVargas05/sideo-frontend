@@ -23,6 +23,8 @@ function mapEmpleado(e) {
     ultimaEval:     e.lastEvaluationDate
                       ? new Date(e.lastEvaluationDate).toLocaleDateString("es-CO")
                       : null,
+    lastEvaluationDate: e.lastEvaluationDate ?? null, // Para cálculos de fechas
+    totalEvaluations: e.totalEvaluations ?? e.evaluationCount ?? e.evaluationsCount ?? 0,
     isActive:       e.active      ?? e.isActive ?? true,
     // campos crudos para edición
     firstName:      e.firstName   ?? "",
@@ -37,12 +39,34 @@ function mapEmpleado(e) {
 }
 
 function mapSummaryStats(s = {}) {
-  const dist = s.riskDistribution ?? {};
+  const seenEmployees = s.total ?? 0;
+  const planCapacity = s.planCapacity ?? 10;
+  const availableSpaces = Math.max(0, planCapacity - seenEmployees);
+  const unassessed = s.unassessedCount ?? 0;
+  const alertsCount = s.alertsCount ?? 0;
+
   return [
-    { label: "Total Empleados",      value: String(s.total ?? 0),                                   valueColor: "text-foreground" },
-    { label: "Riesgo Bajo",          value: String(dist.low    ?? 0),                                valueColor: "text-rosa-low" },
-    { label: "Riesgo Medio",         value: String(dist.medium ?? 0),                                valueColor: "text-rosa-medium" },
-    { label: "Riesgo Alto/Muy Alto", value: String((dist.high ?? 0) + (dist.very_high ?? 0)),        valueColor: "text-rosa-very-high" },
+    { 
+      label: "Capacidad del plan",
+      value: `${availableSpaces}`,
+      subtitle: `Espacios disponibles`,
+      valueColor: "text-foreground",
+      type: "capacity"
+    },
+    { 
+      label: "Empleados sin evaluar",
+      value: String(unassessed),
+      subtitle: "Sin evaluación",
+      valueColor: unassessed > 0 ? "text-warning-fg" : "text-foreground",
+      type: "unassessed"
+    },
+    { 
+      label: "Alertas",
+      value: String(alertsCount),
+      subtitle: "Últimos 30 días",
+      valueColor: alertsCount > 0 ? "text-danger-fg" : "text-foreground",
+      type: "alerts"
+    },
   ];
 }
 
@@ -82,8 +106,27 @@ export function useEmpleados() {
           const list = Array.isArray(data) ? data : (data.data ?? data.employees ?? []);
           const mapped = list.map(mapEmpleado);
           setEmpleados(mapped);
-          // Derivar total de la lista (stats no disponible para evaluador)
-          setSummaryStats(mapSummaryStats({ total: data.total ?? list.length }));
+          
+          // Derivar conteos localmente para evaluador
+          const unassessedCount = mapped.filter(e => !e.riskKey).length;
+          
+          // Calcular alertas: empleados sin evaluar en 30 días
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          const alertsCount = mapped.filter(e => {
+            if (e.lastEvaluationDate) {
+              const evalDate = new Date(e.lastEvaluationDate);
+              return evalDate < thirtyDaysAgo;
+            }
+            return true; // Empleados sin evaluación también cuentan como alerta
+          }).length;
+          
+          // stats no disponible para evaluador
+          setSummaryStats(mapSummaryStats({ 
+            total: data.total ?? list.length,
+            unassessedCount,
+            alertsCount,
+          }));
         }
       } else {
         // Admin: lista completa + stats
@@ -94,9 +137,29 @@ export function useEmpleados() {
         if (listRes.ok) {
           const data = await listRes.json();
           const list = Array.isArray(data) ? data : (data.data ?? data.employees ?? []);
-          setEmpleados(list.map(mapEmpleado));
+          const mapped = list.map(mapEmpleado);
+          setEmpleados(mapped);
+          
+          // Calcular conteos localmente
+          const unassessedCount = mapped.filter(e => !e.riskKey).length;
+          
+          // Calcular alertas: empleados sin evaluar en 30 días
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          const alertsCount = mapped.filter(e => {
+            if (e.lastEvaluationDate) {
+              const evalDate = new Date(e.lastEvaluationDate);
+              return evalDate < thirtyDaysAgo;
+            }
+            return true; // Empleados sin evaluación también cuentan como alerta
+          }).length;
+          
           // Si stats falla, al menos mostrar el total de la lista
-          setSummaryStats(mapSummaryStats({ total: data.total ?? list.length }));
+          setSummaryStats(mapSummaryStats({ 
+            total: data.total ?? list.length,
+            unassessedCount,
+            alertsCount,
+          }));
         }
         if (statsRes.ok) {
           const s = await statsRes.json();
@@ -104,6 +167,9 @@ export function useEmpleados() {
           setSummaryStats(mapSummaryStats({
             ...s,
             total: s.total ?? s.totalEmployees ?? s.totalCount ?? s.count ?? 0,
+            planCapacity: s.planCapacity ?? s.maxEmployees ?? 10,
+            unassessedCount: s.unassessedCount ?? 0,
+            alertsCount: s.alertsCount ?? 0,
           }));
         }
       }

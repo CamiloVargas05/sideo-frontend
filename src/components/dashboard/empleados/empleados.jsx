@@ -344,13 +344,18 @@ export default function Empleados() {
         )}
 
         {/* Summary stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {summaryStats.map((s) => (
             <div key={s.label} className="bg-card border border-border rounded-xl px-5 py-4">
               <p className="text-muted-fg text-xs mb-1">{s.label}</p>
               {loading
                 ? <div className="h-8 w-16 bg-muted rounded animate-pulse" />
-                : <p className={`text-2xl font-bold ${s.valueColor}`}>{s.value}</p>
+                : (
+                  <div>
+                    <p className={`text-2xl font-bold ${s.valueColor}`}>{s.value}</p>
+                    {s.subtitle && <p className="text-muted-fg text-xs mt-1">{s.subtitle}</p>}
+                  </div>
+                )
               }
             </div>
           ))}
@@ -427,7 +432,7 @@ export default function Empleados() {
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Empleado</th>
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Área</th>
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Puesto</th>
-                <th className="text-left px-6 py-3 text-muted-fg font-medium">Riesgo ROSA</th>
+                <th className="text-left px-6 py-3 text-muted-fg font-medium">Total Evaluaciones</th>
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Última Eval.</th>
                 {!isEvaluator && <th className="text-left px-6 py-3 text-muted-fg font-medium">Acciones</th>}
               </tr>
@@ -463,15 +468,9 @@ export default function Empleados() {
                     <td className="px-6 py-3 text-muted-fg">{e.area}</td>
                     <td className="px-6 py-3 text-foreground">{e.puesto}</td>
                     <td className="px-6 py-3">
-                      {e.riesgo ? (
-                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${RISK_BADGE[e.riesgo]}`}>
-                          {e.riesgo}{e.score ? ` (${e.score})` : ""}
-                        </span>
-                      ) : (
-                        <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-fg">
-                          Sin evaluación
-                        </span>
-                      )}
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary">
+                        {e.totalEvaluations}
+                      </span>
                     </td>
                     <td className="px-6 py-3 text-muted-fg">{e.ultimaEval ?? "—"}</td>
                     {!isEvaluator && (
