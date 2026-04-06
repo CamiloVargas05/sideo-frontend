@@ -7,33 +7,33 @@ export default function CompletarPerfil() {
   const { form, setField, initials, loading, error, handleSubmit, router } = useCompletarPerfil();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-[#081736] via-[#123a7c] to-[#2a66bf] px-4 py-10 md:px-8 md:py-12 lg:px-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(186,220,255,0.24),transparent_34%)] opacity-85" />
-      <div className="pointer-events-none absolute inset-0 opacity-80">
-        <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[#4b86eb]/35 blur-3xl" />
-        <div className="absolute top-1/3 -right-16 h-80 w-80 rounded-full bg-[#2f5ca7]/45 blur-3xl" />
-        <div className="absolute -bottom-20 left-1/3 h-64 w-64 rounded-full bg-[#7eb1ff]/30 blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-[#081736] via-[#123a7c] to-[#2a66bf] dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 px-4 py-10 md:px-8 md:py-12 lg:px-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(186,220,255,0.24),transparent_34%)] dark:bg-[radial-gradient(circle_at_12%_18%,rgba(255,255,255,0.03),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(100,150,255,0.06),transparent_34%)] opacity-85" />
+      <div className="pointer-events-none absolute inset-0 dark:opacity-30 opacity-80">
+        <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[#4b86eb]/35 dark:bg-blue-500/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-16 h-80 w-80 rounded-full bg-[#2f5ca7]/45 dark:bg-blue-600/10 blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 h-64 w-64 rounded-full bg-[#7eb1ff]/30 dark:bg-blue-400/5 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-4xl bg-card/90 shadow-[0_36px_90px_-38px_rgba(6,22,54,0.75)] backdrop-blur-md">
-        <div className="border-b border-primary/20 bg-linear-to-r from-[#0d2f6a] via-[#1d4d9c] to-[#2e6ec0] px-6 py-7 md:px-10 md:py-9">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-50">
+      <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-4xl bg-card/90 dark:bg-slate-800 shadow-[0_36px_90px_-38px_rgba(6,22,54,0.75)] dark:shadow-[0_36px_90px_-38px_rgba(0,0,0,0.8)] backdrop-blur-md">
+        <div className="border-b border-primary/20 dark:border-blue-500/20 bg-linear-to-r from-[#0d2f6a] via-[#1d4d9c] to-[#2e6ec0] dark:from-slate-700 dark:via-slate-700 dark:to-slate-600 px-6 py-7 md:px-10 md:py-9">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 dark:border-blue-400/40 bg-primary/20 dark:bg-blue-500/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-50 dark:text-blue-200">
             Primer inicio
           </div>
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white md:text-4xl">Completar perfil</h1>
-              <p className="mt-2 max-w-2xl text-sm text-blue-100/90 md:text-base">
+              <h1 className="text-2xl font-bold text-white dark:text-slate-50 md:text-4xl">Completar perfil</h1>
+              <p className="mt-2 max-w-2xl text-sm text-blue-100/90 dark:text-slate-300 md:text-base">
                 Antes de continuar, necesitamos validar la información del administrador y de la empresa.
               </p>
             </div>
-            <div className="w-full max-w-60 rounded-xl border border-blue-200/25 bg-blue-100/10 p-3 backdrop-blur-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-100/95">Resumen rapido</p>
-              <p className="mt-1.5 text-[11px] leading-4 text-blue-50">Completa 7 campos obligatorios.</p>
+            <div className="w-full max-w-60 rounded-xl border border-blue-200/25 dark:border-slate-600 bg-blue-100/10 dark:bg-slate-700/40 p-3 backdrop-blur-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-100/95 dark:text-slate-300">Resumen rapido</p>
+              <p className="mt-1.5 text-[11px] leading-4 text-blue-50 dark:text-slate-400">Completa 7 campos obligatorios.</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
-                <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium text-blue-50">Administrador</span>
-                <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium text-blue-50">Empresa</span>
-                <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium text-blue-50">Seguridad</span>
+                <span className="rounded-full bg-white/20 dark:bg-slate-600 px-2 py-0.5 text-[10px] font-medium text-blue-50 dark:text-slate-300">Administrador</span>
+                <span className="rounded-full bg-white/20 dark:bg-slate-600 px-2 py-0.5 text-[10px] font-medium text-blue-50 dark:text-slate-300">Empresa</span>
+                <span className="rounded-full bg-white/20 dark:bg-slate-600 px-2 py-0.5 text-[10px] font-medium text-blue-50 dark:text-slate-300">Seguridad</span>
               </div>
             </div>
           </div>
@@ -41,10 +41,10 @@ export default function CompletarPerfil() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-7 p-6 md:p-10 lg:grid-cols-3" noValidate>
           <section className="flex flex-col gap-6 lg:col-span-2">
-            <div className="rounded-2xl border border-border/70 bg-white/70 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] backdrop-blur-sm md:p-6">
+            <div className="rounded-2xl border border-border/70 dark:border-slate-700 bg-white/70 dark:bg-slate-700/50 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] dark:shadow-[0_16px_38px_-32px_rgba(0,0,0,0.4)] backdrop-blur-sm md:p-6">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold text-foreground">Datos personales</h2>
-                <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                <h2 className="text-lg font-semibold text-foreground dark:text-slate-100">Datos personales</h2>
+                <span className="rounded-lg bg-primary/10 dark:bg-blue-500/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary dark:text-blue-300">
                   Requerido
                 </span>
               </div>
@@ -64,10 +64,10 @@ export default function CompletarPerfil() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-white/70 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] backdrop-blur-sm md:p-6">
+            <div className="rounded-2xl border border-border/70 dark:border-slate-700 bg-white/70 dark:bg-slate-700/50 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] dark:shadow-[0_16px_38px_-32px_rgba(0,0,0,0.4)] backdrop-blur-sm md:p-6">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold text-foreground">Datos de empresa</h2>
-                <span className="rounded-lg bg-info-bg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-info-fg">
+                <h2 className="text-lg font-semibold text-foreground dark:text-slate-100">Datos de empresa</h2>
+                <span className="rounded-lg bg-info-bg dark:bg-cyan-500/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-info-fg dark:text-cyan-300">
                   Organización
                 </span>
               </div>
@@ -90,7 +90,7 @@ export default function CompletarPerfil() {
             </div>
 
             {error && (
-              <div className="rounded-xl border border-danger-fg/20 bg-danger-bg px-4 py-3 text-sm text-danger-fg">
+              <div className="rounded-xl border border-danger-fg/20 dark:border-red-500/30 bg-danger-bg dark:bg-red-950/30 px-4 py-3 text-sm text-danger-fg dark:text-red-400">
                 {error}
               </div>
             )}
@@ -99,39 +99,39 @@ export default function CompletarPerfil() {
               <button
                 type="button"
                 onClick={() => router.push("/auth/login")}
-                className="rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-background"
+                className="rounded-xl border border-border dark:border-slate-700 bg-card dark:bg-slate-700 px-5 py-2.5 text-sm font-medium text-foreground dark:text-slate-100 transition-colors hover:bg-background dark:hover:bg-slate-600"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-xl bg-linear-to-r from-[#163f8f] to-[#2b67c7] px-5 py-2.5 text-sm font-semibold text-primary-fg shadow-[0_16px_30px_-16px_rgba(18,61,138,1)] transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:translate-y-0 disabled:brightness-90 disabled:opacity-60"
+                className="rounded-xl bg-linear-to-r from-[#163f8f] to-[#2b67c7] dark:from-blue-700 dark:to-blue-600 px-5 py-2.5 text-sm font-semibold text-primary-fg dark:text-blue-100 shadow-[0_16px_30px_-16px_rgba(18,61,138,1)] dark:shadow-[0_16px_30px_-16px_rgba(37,99,235,0.3)] transition-all hover:-translate-y-0.5 hover:brightness-110 dark:hover:brightness-125 disabled:translate-y-0 disabled:brightness-90 disabled:opacity-60"
               >
                 {loading ? "Guardando..." : "Completar y continuar"}
               </button>
             </div>
           </section>
 
-          <aside className="h-fit rounded-2xl border border-border/70 bg-white/75 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] backdrop-blur-sm lg:sticky lg:top-8">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Vista previa</h3>
-            <p className="mt-1 text-xs text-muted-fg">Así se visualizará tu información en el panel.</p>
+          <aside className="h-fit rounded-2xl border border-border/70 dark:border-slate-700 bg-white/75 dark:bg-slate-700/50 p-5 shadow-[0_16px_38px_-32px_rgba(15,42,99,0.9)] dark:shadow-[0_16px_38px_-32px_rgba(0,0,0,0.4)] backdrop-blur-sm lg:sticky lg:top-8">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground dark:text-slate-100">Vista previa</h3>
+            <p className="mt-1 text-xs text-muted-fg dark:text-slate-400">Así se visualizará tu información en el panel.</p>
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-fg shadow-md shadow-primary/25">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary dark:bg-blue-600 text-sm font-bold text-primary-fg dark:text-blue-100 shadow-md shadow-primary/25 dark:shadow-blue-600/25">
                 {initials}
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-foreground truncate">{`${form.firstName} ${form.lastName}`.trim()}</p>
-                <p className="text-muted-fg text-xs truncate">{form.position || "Cargo pendiente"}</p>
+                <p className="font-semibold text-foreground dark:text-slate-100 truncate">{`${form.firstName} ${form.lastName}`.trim()}</p>
+                <p className="text-muted-fg dark:text-slate-400 text-xs truncate">{form.position || "Cargo pendiente"}</p>
               </div>
             </div>
-            <div className="mt-4 rounded-xl border border-border bg-card p-3">
-              <p className="text-xs text-muted-fg">Empresa</p>
-              <p className="mt-1 text-sm text-foreground">{form.companySector || "Sector pendiente"}</p>
-              <p className="mt-1 text-xs text-muted-fg">{form.companyAddress || "Dirección pendiente"}</p>
+            <div className="mt-4 rounded-xl border border-border dark:border-slate-600 bg-card dark:bg-slate-600/30 p-3">
+              <p className="text-xs text-muted-fg dark:text-slate-400">Empresa</p>
+              <p className="mt-1 text-sm text-foreground dark:text-slate-100">{form.companySector || "Sector pendiente"}</p>
+              <p className="mt-1 text-xs text-muted-fg dark:text-slate-400">{form.companyAddress || "Dirección pendiente"}</p>
             </div>
             {form.logoUrl ? (
-              <div className="relative mt-4 h-32 w-full overflow-hidden rounded-xl border border-border">
+              <div className="relative mt-4 h-32 w-full overflow-hidden rounded-xl border border-border dark:border-slate-600">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={form.logoUrl}
@@ -140,14 +140,14 @@ export default function CompletarPerfil() {
                 />
               </div>
             ) : (
-              <div className="mt-4 flex h-32 w-full items-center justify-center rounded-xl border border-dashed border-border text-xs text-muted-fg">
+              <div className="mt-4 flex h-32 w-full items-center justify-center rounded-xl border border-dashed border-border dark:border-slate-600 text-xs text-muted-fg dark:text-slate-400">
                 Sin logo configurado
               </div>
             )}
 
-            <div className="mt-4 rounded-xl border border-[#2b67c7]/20 bg-linear-to-br from-[#e8f1ff] to-[#dbe9ff] p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">Tip de seguridad</p>
-              <p className="mt-1 text-xs text-muted-fg">
+            <div className="mt-4 rounded-xl border border-[#2b67c7]/20 dark:border-blue-500/30 bg-linear-to-br from-[#e8f1ff] to-[#dbe9ff] dark:from-slate-700/50 dark:to-slate-700/30 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary dark:text-blue-300">Tip de seguridad</p>
+              <p className="mt-1 text-xs text-muted-fg dark:text-slate-300">
                 Usa una contraseña de al menos 8 caracteres con letras, números y símbolos.
               </p>
             </div>
@@ -165,9 +165,9 @@ function Field({ label, value, onChange, type = "text", placeholder, required, m
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <label className="text-sm font-medium text-foreground">
+      <label className="text-sm font-medium text-foreground dark:text-slate-300">
         {label}
-        {required ? <span className="text-danger-fg"> *</span> : null}
+        {required ? <span className="text-danger-fg dark:text-red-400"> *</span> : null}
       </label>
       <div className="relative">
         <input
@@ -177,20 +177,20 @@ function Field({ label, value, onChange, type = "text", placeholder, required, m
           placeholder={placeholder}
           required={required}
           minLength={minLength}
-          className={`w-full rounded-xl border border-border bg-white/95 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-fg transition-all hover:border-primary/35 focus:border-primary/70 focus:outline-none focus:ring-4 focus:ring-primary/15 ${isPasswordField ? "pr-10" : ""}`}
+          className={`w-full rounded-xl border border-border dark:border-slate-600 bg-white/95 dark:bg-slate-800 px-3 py-2.5 text-sm text-foreground dark:text-slate-100 placeholder:text-muted-fg dark:placeholder:text-slate-500 transition-all hover:border-primary/35 dark:hover:border-blue-500/35 focus:border-primary/70 dark:focus:border-blue-400/70 focus:outline-none focus:ring-4 focus:ring-primary/15 dark:focus:ring-blue-500/15 ${isPasswordField ? "pr-10" : ""}`}
         />
         {isPasswordField ? (
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-fg transition-colors hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-fg dark:text-slate-500 transition-colors hover:text-foreground dark:hover:text-slate-300"
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
           </button>
         ) : null}
       </div>
-      {isPasswordField ? <p className="text-xs text-muted-fg">Mínimo 8 caracteres.</p> : null}
+      {isPasswordField ? <p className="text-xs text-muted-fg dark:text-slate-400">Mínimo 8 caracteres.</p> : null}
     </div>
   );
 }
