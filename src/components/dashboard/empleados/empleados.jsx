@@ -55,6 +55,24 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
+  function handleFirstName(e) {
+    // Solo letras y espacios — sin números
+    const val = e.target.value.replace(/\d/g, "");
+    setForm((prev) => ({ ...prev, firstName: val }));
+  }
+
+  function handleLastName(e) {
+    // Solo letras y espacios — sin números
+    const val = e.target.value.replace(/\d/g, "");
+    setForm((prev) => ({ ...prev, lastName: val }));
+  }
+
+  function handleDocumentNumber(e) {
+    // Solo números — sin letras
+    const val = e.target.value.replace(/\D/g, "");
+    setForm((prev) => ({ ...prev, documentNumber: val }));
+  }
+
   function handlePhone(e) {
     // solo números y símbolos telefónicos — sin letras
     const val = e.target.value.replace(/[a-zA-Z]/g, "");
@@ -63,16 +81,82 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.position.trim() || !form.area.trim()) {
-      setFormError("Nombre, apellido, puesto y área son obligatorios.");
-      return;
-    }
-    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setFormError("El correo no tiene un formato válido.");
-      return;
-    }
-    setSaving(true);
     setFormError("");
+
+    // Validación: Nombres sin números
+    if (!form.firstName.trim()) {
+      setFormError("El nombre es obligatorio.");
+      return;
+    }
+    if (/\d/.test(form.firstName.trim())) {
+      setFormError("El nombre no puede contener números.");
+      return;
+    }
+
+    if (!form.lastName.trim()) {
+      setFormError("El apellido es obligatorio.");
+      return;
+    }
+    if (/\d/.test(form.lastName.trim())) {
+      setFormError("El apellido no puede contener números.");
+      return;
+    }
+
+    // Validación: Puesto y Área obligatorios
+    if (!form.position.trim()) {
+      setFormError("El puesto es obligatorio.");
+      return;
+    }
+
+    if (!form.area.trim()) {
+      setFormError("El área es obligatoria.");
+      return;
+    }
+
+    // Validación: Documento (si hay número, debe haber tipo)
+    if (form.documentNumber.trim() && !form.documentType.trim()) {
+      setFormError("Debes seleccionar un tipo de documento.");
+      return;
+    }
+
+    if (form.documentType.trim() && !form.documentNumber.trim()) {
+      setFormError("Debes ingresar el número de documento.");
+      return;
+    }
+
+    if (form.documentNumber.trim() && form.documentNumber.trim().length < 8) {
+      setFormError("El número de documento debe tener al menos 8 dígitos.");
+      return;
+    }
+
+    // Validación: Correo obligatorio
+    if (!form.email.trim()) {
+      setFormError("El correo es obligatorio.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setFormError("El correo debe tener un formato válido (ej: usuario@ejemplo.com).");
+      return;
+    }
+
+    // Validación: Fecha de ingreso obligatoria
+    if (!form.hireDate) {
+      setFormError("La fecha de ingreso es obligatoria.");
+      return;
+    }
+
+    // Validación: Fecha de ingreso no puede ser en el futuro
+    const hireDate = new Date(form.hireDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (hireDate > today) {
+      setFormError("La fecha de ingreso no puede ser en el futuro.");
+      return;
+    }
+
+    setSaving(true);
 
     const payload = {
       firstName:      form.firstName.trim(),
@@ -112,12 +196,12 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Nombre *</label>
-              <input name="firstName" value={form.firstName} onChange={handleChange}
+              <input name="firstName" value={form.firstName} onChange={handleFirstName}
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Apellido *</label>
-              <input name="lastName" value={form.lastName} onChange={handleChange}
+              <input name="lastName" value={form.lastName} onChange={handleLastName}
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -135,7 +219,7 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Número de documento</label>
-              <input name="documentNumber" value={form.documentNumber} onChange={handleChange}
+              <input name="documentNumber" value={form.documentNumber} onChange={handleDocumentNumber}
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -146,10 +230,10 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Área *</label>
               <input name="area" value={form.area} onChange={handleChange}
-                className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                className="px-3 py-2 text-sm border border-border rounded-lg bg-backgroDocumentNumberxt-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-foreground">Correo</label>
+              <label className="text-sm font-medium text-foreground">Correo *</label>
               <input name="email" type="email" value={form.email} onChange={handleChange}
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
@@ -160,7 +244,7 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5 col-span-2">
-              <label className="text-sm font-medium text-foreground">Fecha de ingreso</label>
+              <label className="text-sm font-medium text-foreground">Fecha de ingreso *</label>
               <input name="hireDate" type="date" value={form.hireDate} onChange={handleChange}
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
