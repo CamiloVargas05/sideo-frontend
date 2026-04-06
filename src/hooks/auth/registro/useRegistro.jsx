@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useValidateRegistro } from "./useValidateRegistro";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
 export function useRegistro() {
   const router = useRouter();
+  const { validateStep0, validateStep1, validateStep2 } = useValidateRegistro();
 
   const [step, setStep]     = useState(0);
   const [error, setError]   = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -27,16 +30,38 @@ export function useRegistro() {
 
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Limpiar error del campo cuando el usuario empieza a escribir
+    setFieldErrors((prev) => ({ ...prev, [field]: null }));
   }
 
   function nextStep(e) {
     e.preventDefault();
     setError("");
+    
+    // Validar según el paso actual
+    let errors = {};
+    if (step === 0) {
+      errors = validateStep0(form);
+    } else if (step === 1) {
+      errors = validateStep1(form);
+    } else if (step === 2) {
+      errors = validateStep2(form);
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstErrorMsg = Object.values(errors)[0];
+      setError(firstErrorMsg);
+      return;
+    }
+
+    setFieldErrors({});
     setStep((s) => s + 1);
   }
 
   function prevStep() {
     setError("");
+    setFieldErrors({});
     setStep((s) => s - 1);
   }
 
@@ -44,8 +69,12 @@ export function useRegistro() {
     e.preventDefault();
     setError("");
 
-    if (!form.plan || !form.paymentMethod) {
-      setError("Seleccione un plan y un método de pago.");
+    // Validar paso 2
+    const errors = validateStep2(form);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstErrorMsg = Object.values(errors)[0];
+      setError(firstErrorMsg);
       return;
     }
 
@@ -70,5 +99,5 @@ export function useRegistro() {
     }
   }
 
-  return { step, form, set, error, loading, nextStep, prevStep, handleSubmit };
+  return { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit };
 }

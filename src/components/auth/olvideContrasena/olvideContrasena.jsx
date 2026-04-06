@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useOlvideContrasena } from "@/hooks/auth/olvideContrasena/useOlvideContrasena";
+import { Alert } from "@/components/ui/Alert";
+import { LoadingModal } from "@/components/ui/LoadingModal";
 
 /* ── Panel izquierdo ── */
 function BrandPanel() {
@@ -63,6 +65,12 @@ export default function OlvideContrasena() {
   return (
     <div className="min-h-screen flex bg-background">
 
+      <LoadingModal
+        isOpen={loading}
+        title="Enviando instrucciones"
+        message="Por favor espere mientras enviamos el enlace de recuperación..."
+      />
+
       {showByeAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <div className="flex items-center gap-5 rounded-3xl border border-amber-300/60 bg-linear-to-r from-amber-100 to-orange-100 px-8 py-6 shadow-2xl shadow-amber-900/20">
@@ -115,17 +123,14 @@ export default function OlvideContrasena() {
               <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
                 <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
 
-                  {/* Error */}
+                  {/* Error Alert */}
                   {error && (
-                    <div
-                      role="alert"
-                      className="flex items-start gap-2.5 bg-danger-bg text-danger-fg text-sm px-4 py-3 rounded-xl border border-danger-fg/20"
-                    >
-                      <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                      </svg>
-                      <span>{error}</span>
-                    </div>
+                    <Alert
+                      type="error"
+                      title="Error en la recuperación"
+                      message={error}
+                      onClose={() => setError("")}
+                    />
                   )}
 
                   <div className="flex flex-col gap-1.5">
@@ -180,19 +185,19 @@ export default function OlvideContrasena() {
           ) : (
             /* ── Estado: correo enviado ── */
             <div className="flex flex-col items-center gap-6 text-center">
-              <div className="w-20 h-20 bg-success-bg border border-success-fg/20 rounded-full flex items-center justify-center">
-                <svg className="w-9 h-9 text-success-fg" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
+              <Alert
+                type="success"
+                title="Correo enviado exitosamente"
+                message={`Enviamos las instrucciones a ${email}. El enlace expira en 30 minutos.`}
+              />
+              
               <div className="flex flex-col gap-2">
                 <h2 className="text-2xl font-bold text-foreground">Revise su correo</h2>
                 <p className="text-muted-fg text-sm leading-relaxed max-w-sm">
-                  Enviamos las instrucciones a{" "}
-                  <span className="font-semibold text-foreground">{email}</span>.
-                  El enlace expira en 30 minutos.
+                  Si no ve el correo, revise su carpeta de spam o solicite que lo reenviemos.
                 </p>
               </div>
+              
               <p className="text-sm text-muted-fg">
                 ¿No llegó?{" "}
                 <button
@@ -202,6 +207,7 @@ export default function OlvideContrasena() {
                   Reenviar
                 </button>
               </p>
+              
               <Link
                 href="/auth/login"
                 className="flex items-center gap-2 bg-primary text-primary-fg font-semibold px-8 py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md shadow-primary/20"

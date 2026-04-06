@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLogin } from "@/hooks/auth/login/useLogin";
+import { Alert } from "@/components/ui/Alert";
+import { LoadingModal } from "@/components/ui/LoadingModal";
 
 /* ── Ícono: ojo abierto ── */
 function IconEyeOpen() {
@@ -102,6 +104,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-background">
+
+      <LoadingModal
+        isOpen={loading}
+        title="Iniciando sesión"
+        message="Verificando tus credenciales..."
+      />
 
       <BrandPanel />
 
@@ -213,15 +221,12 @@ export default function Login() {
 
               {/* Error */}
               {error && (
-                <div
-                  role="alert"
-                  className="flex items-start gap-2.5 bg-danger-bg text-danger-fg text-sm px-4 py-3 rounded-xl border border-danger-fg/20"
-                >
-                  <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  </svg>
-                  <span>{error}</span>
-                </div>
+                <Alert
+                  type="error"
+                  title="Error de autenticación"
+                  message={error}
+                  onClose={() => setError("")}
+                />
               )}
 
               {/* Botón enviar */}

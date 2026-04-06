@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRegistro } from "@/hooks/auth/registro/useRegistro";
+import { Alert } from "@/components/ui/Alert";
+import { LoadingModal } from "@/components/ui/LoadingModal";
 
 /* ── Panel izquierdo ── */
 function BrandPanel() {
@@ -111,10 +113,16 @@ const INPUT_CLS =
 const STEPS = ["Empresa", "Administrador", "Plan"];
 
 export default function Registro() {
-  const { step, form, set, error, loading, nextStep, prevStep, handleSubmit } = useRegistro();
+  const { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit } = useRegistro();
 
   return (
     <div className="min-h-screen flex bg-background">
+
+      <LoadingModal
+        isOpen={loading}
+        title="Registrando su cuenta"
+        message="Por favor espere mientras procesamos su solicitud..."
+      />
 
       <BrandPanel />
 
@@ -171,16 +179,15 @@ export default function Registro() {
           {/* Tarjeta del formulario */}
           <div className="bg-card border border-border rounded-2xl p-7 shadow-sm">
 
-            {/* Error */}
+            {/* Error Alert */}
             {error && (
-              <div
-                role="alert"
-                className="flex items-start gap-2.5 bg-danger-bg text-danger-fg text-sm px-4 py-3 rounded-xl border border-danger-fg/20 mb-5"
-              >
-                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                </svg>
-                <span>{error}</span>
+              <div className="mb-5">
+                <Alert
+                  type="error"
+                  title="Error en el registro"
+                  message={error}
+                  onClose={() => setError("")}
+                />
               </div>
             )}
 
@@ -189,35 +196,91 @@ export default function Registro() {
               <form className="flex flex-col gap-4" onSubmit={nextStep} noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5 sm:col-span-2">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Nombre de la empresa *</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Nombre de la empresa *</label>
+                      {fieldErrors.companyName && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.companyName}
+                        </span>
+                      )}
+                    </div>
                     <input required placeholder="Ingrese el nombre de su empresa" value={form.companyName}
-                      onChange={(e) => set("companyName", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("companyName", e.target.value)}
+                      className={`${INPUT_CLS} ${fieldErrors.companyName ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">NIT *</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">NIT *</label>
+                      {fieldErrors.nit && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.nit}
+                        </span>
+                      )}
+                    </div>
                     <input required placeholder="Ingrese el NIT" value={form.nit}
-                      inputMode="numeric" pattern="[0-9\-]+" title="Solo números y guión (ej: 900123456-1)"
-                      onChange={(e) => set("nit", e.target.value.replace(/[^0-9-]/g, ""))} className={INPUT_CLS} />
+                      inputMode="numeric" title="Solo números"
+                      onChange={(e) => set("nit", e.target.value.replace(/[^0-9]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.nit ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Sector</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Sector *</label>
+                      {fieldErrors.sector && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.sector}
+                        </span>
+                      )}
+                    </div>
                     <input placeholder="Ingrese el sector" value={form.sector}
-                      onChange={(e) => set("sector", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("sector", e.target.value.replace(/[^a-záéíóúñA-ZÁÉÍÓÚÑ\s]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.sector ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Ciudad</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Ciudad *</label>
+                      {fieldErrors.city && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.city}
+                        </span>
+                      )}
+                    </div>
                     <input placeholder="Ingrese la ciudad" value={form.city}
-                      onChange={(e) => set("city", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("city", e.target.value.replace(/[^a-záéíóúñA-ZÁÉÍÓÚÑ\s]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.city ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Teléfono</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Teléfono *</label>
+                      {fieldErrors.phone && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.phone}
+                        </span>
+                      )}
+                    </div>
                     <input placeholder="Ingrese el teléfono" value={form.phone}
                       type="tel" inputMode="numeric" maxLength={15}
-                      onChange={(e) => set("phone", e.target.value.replace(/[^0-9+]/g, ""))} className={INPUT_CLS} />
+                      onChange={(e) => set("phone", e.target.value.replace(/[^0-9+]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.phone ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                 </div>
                 <button type="submit"
-                  className="w-full bg-primary text-primary-fg font-semibold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md shadow-primary/20 mt-1">
+                  disabled={loading}
+                  className="w-full bg-primary text-primary-fg font-semibold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md shadow-primary/20 mt-1 disabled:opacity-50">
                   Continuar
                 </button>
               </form>
@@ -228,19 +291,52 @@ export default function Registro() {
               <form className="flex flex-col gap-4" onSubmit={nextStep} noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Nombre *</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Nombre *</label>
+                      {fieldErrors.adminFirstName && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.adminFirstName}
+                        </span>
+                      )}
+                    </div>
                     <input required placeholder="Ingrese el nombre" value={form.adminFirstName}
-                      onChange={(e) => set("adminFirstName", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("adminFirstName", e.target.value.replace(/[^a-záéíóúñA-ZÁÉÍÓÚÑ\s]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.adminFirstName ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Apellido *</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Apellido *</label>
+                      {fieldErrors.adminLastName && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.adminLastName}
+                        </span>
+                      )}
+                    </div>
                     <input required placeholder="Ingrese el apellido" value={form.adminLastName}
-                      onChange={(e) => set("adminLastName", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("adminLastName", e.target.value.replace(/[^a-záéíóúñA-ZÁÉÍÓÚÑ\s]/g, ""))}
+                      className={`${INPUT_CLS} ${fieldErrors.adminLastName ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                   <div className="flex flex-col gap-1.5 sm:col-span-2">
-                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Correo electrónico *</label>
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Correo electrónico *</label>
+                      {fieldErrors.adminEmail && (
+                        <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          {fieldErrors.adminEmail}
+                        </span>
+                      )}
+                    </div>
                     <input required type="email" autoComplete="email" placeholder="Ingrese el correo" value={form.adminEmail}
-                      onChange={(e) => set("adminEmail", e.target.value)} className={INPUT_CLS} />
+                      onChange={(e) => set("adminEmail", e.target.value)}
+                      className={`${INPUT_CLS} ${fieldErrors.adminEmail ? "border-danger-fg/50 focus:ring-danger-fg/20 focus:border-danger-fg" : ""}`} />
                   </div>
                 </div>
                 <div className="flex items-start gap-2.5 bg-info-bg border border-info-fg/20 text-info-fg rounded-xl px-4 py-3 text-xs">
@@ -254,8 +350,8 @@ export default function Registro() {
                     className="flex-1 border border-border text-foreground font-semibold py-3 rounded-xl hover:bg-secondary/50 transition-all text-sm">
                     Atrás
                   </button>
-                  <button type="submit"
-                    className="flex-1 bg-primary text-primary-fg font-semibold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md shadow-primary/20">
+                  <button type="submit" disabled={loading}
+                    className="flex-1 bg-primary text-primary-fg font-semibold py-3 rounded-xl hover:opacity-90 transition-all text-sm shadow-md shadow-primary/20 disabled:opacity-50">
                     Continuar
                   </button>
                 </div>
@@ -267,8 +363,18 @@ export default function Registro() {
               <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
                 {/* Selección de plan */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Seleccione su plan *</label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Seleccione su plan *</label>
+                    {fieldErrors.plan && (
+                      <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.plan}
+                      </span>
+                    )}
+                  </div>
+                  <div className={`grid grid-cols-3 gap-3 ${fieldErrors.plan ? "opacity-60" : ""}`}>
                     {PLANS.map((p) => (
                       <button key={p.id} type="button" onClick={() => set("plan", p.id)}
                         className={`relative flex flex-col items-center gap-1.5 border-2 rounded-xl px-3 py-3.5 transition-all cursor-pointer
@@ -288,8 +394,18 @@ export default function Registro() {
 
                 {/* Método de pago */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Método de pago *</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs font-semibold text-foreground tracking-wide uppercase">Método de pago *</label>
+                    {fieldErrors.paymentMethod && (
+                      <span className="text-xs text-danger-fg flex items-center gap-0.5">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {fieldErrors.paymentMethod}
+                      </span>
+                    )}
+                  </div>
+                  <div className={`grid grid-cols-2 gap-2 ${fieldErrors.paymentMethod ? "opacity-60" : ""}`}>
                     {PAYMENT_METHODS.map((m) => (
                       <button key={m.id} type="button" onClick={() => set("paymentMethod", m.id)}
                         className={`border-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-all text-left
