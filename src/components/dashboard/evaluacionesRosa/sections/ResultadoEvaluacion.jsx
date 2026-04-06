@@ -37,7 +37,7 @@ function ScoreCircle({ score, size = 120 }) {
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className={`font-bold text-2xl ${level.className}`}>
-          {score.toFixed(1)}
+          {Math.round(score)}
         </span>
       </div>
     </div>
@@ -46,25 +46,68 @@ function ScoreCircle({ score, size = 120 }) {
 
 const RECOMMENDATIONS = {
   chair: [
-    "Ajustar la altura del asiento de modo que los pies toquen el piso y las rodillas formen un ángulo de 90°",
-    "Usar un cojín de espuma o gel para mayor comodidad del asiento",
-    "Verificar que el respaldo proporcione apoyo lumbar adecuado",
-    "Considerar una silla ergonómica certificada si no es ajustable",
+    "Reducir la altura del asiento para evitar que los pies queden sin contacto con el suelo.",
+    "Ampliar el espacio libre bajo la mesa para permitir movilidad de piernas.",
+    "Reemplazar la silla por una con altura de asiento regulable.",
+    "Ajustar la profundidad del asiento para mantener entre 8 cm entre el asiento y la parte posterior de las rodillas.",
+    "Reemplazar la silla por una con profundidad de asiento regulable.",
+    "Ajustar los reposabrazos para que los codos queden alineados con los hombros.",
+    "Reducir la separación entre los reposabrazos.",
+    "Instalar reposabrazos con superficie acolchada.",
+    "Reemplazar los reposabrazos por unos ajustables.",
+    "Ajustar el respaldo para que soporte adecuadamente la zona lumbar (95°-110°).",
+    "Bajar la superficie de trabajo para relajar los hombros.",
+    "Reemplazar la silla por una con respaldo ajustable.",
   ],
   screen: [
-    "Colocar la pantalla a una distancia de 50-70 cm del operador",
-    "La parte superior de la pantalla debe estar al nivel de los ojos",
-    "Eliminar reflejos mediante cortinas o reubicación de la pantalla",
-    "Usar un soporte para documentos de referencia al nivel de la pantalla",
-    "Utilizar auriculares o sistema de manos libres para llamadas telefónicas",
+    "Reducir la altura de la pantalla para evitar extensión de cuello.",
+    "Reposicionar la pantalla frente al trabajador para evitar rotación cervical.",
+    "Instalar un atril o soporte de documentos junto a la pantalla.",
+    "Eliminar brillos y reflejos en la pantalla usando filtros o reposicionando la iluminación.",
+    "Acercar la pantalla al rango de 45-75 cm del trabajador.",
+  ],
+  phone: [
+    "Acercar el teléfono al puesto de trabajo, a menos de 30 cm del trabajador.",
+    "Utilizar auriculares o manos libres para evitar sujetar el teléfono con el cuello.",
+    "Instalar función de manos libres en el teléfono.",
   ],
   peripherals: [
-    "Posicionar el teclado de modo que los codos formen un ángulo de 90°",
-    "Mantener el mouse al mismo nivel y cerca del cuerpo",
-    "Usar un mouse ergonómico vertical si hay dolor en la muñeca",
-    "Colocar un reposamuñecas para el teclado durante descansos",
-    "Evitar objetos sobre el teclado que interfieran con la postura",
+    "Reposicionar el mouse para que quede alineado con el hombro y cerca del cuerpo.",
+    "Reemplazar el mouse por uno de tamaño adecuado a la mano del trabajador.",
+    "Nivelar el mouse y el teclado a la misma altura.",
+    "Instalar un reposamuñecas blando para reducir la presión en la muñeca al usar el mouse.",
+    "Instalar una bandeja extraíble para teclado que permita mantener las muñecas en posición neutra.",
+    "Corregir la posición del teclado para evitar desviación lateral de las muñecas.",
+    "Reducir la altura del teclado para que los hombros estén relajados.",
   ],
+  workspace: [
+    "Reorganizar el espacio de trabajo para eliminar la necesidad de alcanzar objetos por encima de la cabeza.",
+    "Reemplazar la superficie de trabajo o teclado por uno ajustable en altura.",
+  ],
+};
+
+const SECTION_TITLES = {
+  chair: "Silla y Área de Asiento",
+  screen: "Pantalla",
+  phone: "Teléfono",
+  peripherals: "Teclado y Mouse",
+  workspace: "Espacio de Trabajo",
+};
+
+// Mapeo de campos del breakdown a etiquetas en español
+const BREAKDOWN_LABELS = {
+  seatHeight: "Altura Asiento",
+  seatDepth: "Profundidad Asiento",
+  armrests: "Reposabrazos",
+  backrest: "Respaldo",
+  chairTableA: "Puntuación Silla, Tabla A",
+  screenWithTime: "Pantalla + Tiempo",
+  phoneWithTime: "Teléfono + Tiempo",
+  mouseWithTime: "Mouse + Tiempo",
+  keyboardWithTime: "Teclado + Tiempo",
+  tableB: "Pantalla + Periféricos, Tabla B",
+  tableC: "Pantalla y Periféricos, Tabla C",
+  tableD: "Espacio de Trabajo, Tabla D",
 };
 
 export default function ResultadoEvaluacion({
@@ -72,16 +115,52 @@ export default function ResultadoEvaluacion({
   onBack,
   onDownloadPDF,
 }) {
-  const { empleado, observations, sectionScores, overallScore, riskLevel } =
-    data;
-  const nombreCompleto = `${empleado.firstName} ${empleado.lastName}`;
+  // Extraer datos - soportar tanto formato antiguo como nuevo del servidor
+  const empleado = data.empleado || data.employee || {};
+  const observations = data.observations || "";
+  const overallScore = data.rosaFinal ?? data.overallScore ?? data.score ?? 0;
+  const riskLevelLabel = data.riskLevel || "Desconocido";
+  
+  // Extraer breakdown de detalles desglosados
+  // El servidor puede enviar en data.breakdown (nuevo) o data.detail (antiguo)
+  const detailData = data.breakdown || data.detail || {};
+  
+  // Campos que queremos mostrar en orden
+  const fieldsToShow = [
+    'seatHeight',
+    'seatDepth',
+    'armrests',
+    'backrest',
+    'chairTableA',
+    'screenWithTime',
+    'phoneWithTime',
+    'mouseWithTime',
+    'keyboardWithTime',
+    'tableB',
+    'tableC',
+    'tableD',
+  ];
+  
+  // Crear lista de componentes desglosados - solo mostrar los campos específicos
+  const breakdownItems = fieldsToShow
+    .map((key) => ({
+      label: BREAKDOWN_LABELS[key] || key,
+      value: detailData[key],
+    }))
+    .filter(({ value }) => value !== undefined && value !== null);
+
+  const nombreCompleto = `${empleado.firstName || ""} ${empleado.lastName || ""}`.trim();
   const fecha = new Date().toLocaleDateString("es-CO", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
+  // Determinar si necesita acción basado en el puntaje
   const necesitaAccion = overallScore >= 5;
+  
+  // Obtener el objeto riskLevel con estilos
+  const riskLevel = getRiskLevel(overallScore);
 
   return (
     <div className="flex flex-col h-full">
@@ -146,27 +225,37 @@ export default function ResultadoEvaluacion({
                     : "Condiciones ergonómicas aceptables. Continuar monitoreando."}
                 </p>
 
-                {/* Section scores grid */}
-                <div className="grid grid-cols-3 gap-3">
-                  {ROSA_SECTIONS.map((section, i) => {
-                    const score = sectionScores[i];
-                    const level = score !== null ? getRiskLevel(score) : null;
-                    return (
-                      <div
-                        key={section.id}
-                        className="flex flex-col items-center gap-1 bg-background border border-border rounded-lg px-3 py-2"
-                      >
-                        <p className="text-muted-fg text-xs">{section.section}</p>
-                        <p
-                          className={`text-xl font-bold ${
-                            level ? level.className : "text-muted-fg"
-                          }`}
-                        >
-                          {score !== null ? score.toFixed(0) : "—"}
-                        </p>
+                {/* Section scores grid - Mostrar detalles desglosados en tabla */}
+                <div className="w-full">
+                  {breakdownItems.length > 0 ? (
+                    <div className="border border-border rounded-lg overflow-hidden">
+                      <div className="grid grid-cols-2 border-b border-border bg-background/50">
+                        <div className="px-4 py-2">
+                          <p className="text-xs font-semibold text-muted-fg">Componente</p>
+                        </div>
+                        <div className="px-4 py-2">
+                          <p className="text-xs font-semibold text-muted-fg">Puntaje</p>
+                        </div>
                       </div>
-                    );
-                  })}
+                      {breakdownItems.map((item, i) => (
+                        <div
+                          key={i}
+                          className="grid grid-cols-2 border-b border-border last:border-0 hover:bg-background/50 transition-colors"
+                        >
+                          <div className="px-4 py-3">
+                            <p className="text-sm text-foreground">{item.label}</p>
+                          </div>
+                          <div className="px-4 py-3">
+                            <p className="text-sm font-semibold text-foreground">{Math.round(item.value)}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-fg">
+                      Cargando detalles...
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -188,30 +277,25 @@ export default function ResultadoEvaluacion({
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 💡 Recomendaciones de Intervención
               </h3>
-              <div className="space-y-4">
-                {ROSA_SECTIONS.map((section, i) => {
-                  const score = sectionScores[i];
-                  if (score === null || score < 5) return null;
-
-                  return (
-                    <div key={section.id}>
-                      <p className="font-medium text-foreground mb-2">
-                        {section.section}
-                      </p>
-                      <ul className="space-y-1 ml-4">
-                        {RECOMMENDATIONS[section.id]?.map((rec, j) => (
-                          <li
-                            key={j}
-                            className="flex items-start gap-2 text-sm text-foreground"
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full mt-1.5 bg-primary shrink-0" />
-                            {rec}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
+              <div className="space-y-6">
+                {Object.entries(RECOMMENDATIONS).map(([category, recs]) => (
+                  <div key={category}>
+                    <p className="font-medium text-foreground mb-3">
+                      {SECTION_TITLES[category] || category}
+                    </p>
+                    <ul className="space-y-2 ml-4">
+                      {recs.map((rec, j) => (
+                        <li
+                          key={j}
+                          className="flex items-start gap-2 text-sm text-foreground"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full mt-1.5 bg-primary shrink-0" />
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
             </div>
 
