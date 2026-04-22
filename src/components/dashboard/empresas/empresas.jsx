@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { showToast } from "nextjs-toast-notify";
-import { Search, Power, X, ChevronDown } from "lucide-react";
+import { Search, X, ChevronDown } from "lucide-react";
 import { useEmpresas } from "@/hooks/dashboard/empresas/useEmpresas";
-import ConfirmModal from "@/components/ui/confirmModal";
 
 const PLAN_BADGE = {
   Plus: "bg-secondary text-secondary-fg",
@@ -20,12 +18,11 @@ const ESTADO_BADGE = {
 const ESTADO_OPTIONS = ["Todos", "Activa", "Inactiva"];
 
 export default function Empresas() {
-  const { empresas, loading, error, handleToggleActive } = useEmpresas();
+  const { empresas, loading, error } = useEmpresas();
 
   const [search, setSearch]             = useState("");
   const [estadoFilter, setEstadoFilter] = useState("Todos");
   const [showEstadoMenu, setShowEstadoMenu] = useState(false);
-  const [dialog, setDialog]             = useState(null);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -35,27 +32,6 @@ export default function Empresas() {
       return matchSearch && matchEstado;
     });
   }, [empresas, search, estadoFilter]);
-
-  function confirmarToggle(e) {
-    const desactivar = e.isActive;
-    setDialog({
-      title:        desactivar ? `¿Desactivar ${e.nombre}?` : `¿Activar ${e.nombre}?`,
-      message:      desactivar
-        ? "La empresa y sus usuarios perderán acceso a la plataforma."
-        : "La empresa recuperará acceso a la plataforma.",
-      variant:      desactivar ? "warning" : "info",
-      confirmLabel: desactivar ? "Desactivar" : "Activar",
-      onConfirm:    async () => {
-        const res = await handleToggleActive(e.id);
-        showToast[res.ok ? "success" : "error"](
-          res.ok
-            ? (desactivar ? "Empresa desactivada." : "Empresa activada.")
-            : "No se pudo actualizar el estado.",
-          { position: "top-right", duration: 3000 }
-        );
-      },
-    });
-  }
 
   return (
     <div className="flex flex-col h-full" onClick={() => setShowEstadoMenu(false)}>
@@ -124,14 +100,13 @@ export default function Empresas() {
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Empleados</th>
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Plan</th>
                 <th className="text-left px-6 py-3 text-muted-fg font-medium">Estado</th>
-                <th className="text-left px-6 py-3 text-muted-fg font-medium">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-border last:border-0">
-                    {Array.from({ length: 7 }).map((__, j) => (
+                    {Array.from({ length: 6 }).map((__, j) => (
                       <td key={j} className="px-6 py-4">
                         <div className="h-4 bg-muted rounded animate-pulse" style={{ width: j === 0 ? "160px" : "70px" }} />
                       </td>
@@ -140,7 +115,7 @@ export default function Empresas() {
                 ))
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-fg text-sm">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-fg text-sm">
                     {empresas.length === 0 ? "No hay empresas registradas." : "Sin resultados para los filtros aplicados."}
                   </td>
                 </tr>
@@ -164,19 +139,6 @@ export default function Empresas() {
                         {e.estado}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => confirmarToggle(e)}
-                        className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                          e.isActive
-                            ? "border-border text-muted-fg hover:text-warning-fg hover:border-warning-fg"
-                            : "border-border text-muted-fg hover:text-success-fg hover:border-success-fg"
-                        }`}
-                        title={e.isActive ? "Desactivar empresa" : "Activar empresa"}
-                      >
-                        <Power size={12} />
-                      </button>
-                    </td>
                   </tr>
                 ))
               )}
@@ -185,7 +147,6 @@ export default function Empresas() {
         </div>
       </div>
 
-      {dialog && <ConfirmModal {...dialog} onClose={() => setDialog(null)} />}
     </div>
   );
 }
