@@ -14,6 +14,7 @@ export function useRegistro() {
   const [error, setError]   = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [form, setForm] = useState({
     companyName: "",
@@ -91,7 +92,11 @@ export function useRegistro() {
         setError(msg ?? "Error al registrar. Intente nuevamente.");
         return;
       }
-      router.push("/auth/login?registered=1");
+      // Mostrar modal de éxito por 3 segundos, luego redirigir
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        router.push("/auth/login?registered=1");
+      }, 3000);
     } catch {
       setError("No se pudo conectar con el servidor.");
     } finally {
@@ -99,5 +104,5 @@ export function useRegistro() {
     }
   }
 
-  return { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit };
+  return { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit, showSuccessModal, setShowSuccessModal };
 }

@@ -113,7 +113,7 @@ const INPUT_CLS =
 const STEPS = ["Empresa", "Administrador", "Plan"];
 
 export default function Registro() {
-  const { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit } = useRegistro();
+  const { step, form, set, error, fieldErrors, loading, nextStep, prevStep, handleSubmit, showSuccessModal, setShowSuccessModal } = useRegistro();
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -122,6 +122,13 @@ export default function Registro() {
         isOpen={loading}
         title="Registrando su cuenta"
         message="Por favor espere mientras procesamos su solicitud..."
+      />
+
+      {/* Modal de éxito */}
+      <LoadingModal
+        isOpen={showSuccessModal}
+        title="¡Registro exitoso!"
+        message="Su cuenta ha sido creada correctamente. Le hemos enviado una contraseña temporal al correo registrado. Por favor, revise su bandeja de entrada y también la carpeta de spam. Redirigiendo al login..."
       />
 
       <BrandPanel />
