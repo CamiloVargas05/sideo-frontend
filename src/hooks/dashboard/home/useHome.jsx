@@ -155,7 +155,6 @@ export function useHome() {
   const [role, setRole]                   = useState("");
   const [superData, setSuperData]         = useState(null);
   const [adminData, setAdminData]         = useState(null);
-  const [evaluatorData, setEvaluatorData] = useState(null);
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState("");
 
@@ -165,7 +164,6 @@ export function useHome() {
 
     if (MOCK_MODE) {
       if (detectedRole === "super_admin") setSuperData(MOCK_SUPER_DATA);
-      else if (detectedRole === "evaluator") setEvaluatorData(MOCK_EVALUATOR_DATA);
       else setAdminData(MOCK_ADMIN_DATA);
       setLoading(false);
       return;
@@ -187,9 +185,7 @@ export function useHome() {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
-            const d = await res.json();
-            if (detectedRole === "evaluator") setEvaluatorData(d);
-            else setAdminData(d);
+            setAdminData(await res.json());
           } else {
             setError("No se pudo cargar el dashboard.");
           }
@@ -204,5 +200,5 @@ export function useHome() {
     fetchDashboard();
   }, []);
 
-  return { role, loading, error, superData, adminData, evaluatorData };
+  return { role, loading, error, superData, adminData };
 }

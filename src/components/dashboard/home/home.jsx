@@ -3,7 +3,6 @@
 import {
   Users, ClipboardList, TrendingUp, AlertTriangle,
   Building2, CheckCircle, XCircle, Clock, CreditCard,
-  Plus, CalendarClock, Star,
 } from "lucide-react";
 import {
   useHome,
@@ -98,8 +97,11 @@ function AdminDashboard({ data, onNavigate }) {
         {/* Company info banner */}
         <div className="bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Building2 size={22} className="text-primary" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+              {company.logoUrl
+                ? <img src={company.logoUrl} alt={company.name} className="w-full h-full object-cover" />
+                : <Building2 size={22} className="text-primary" />
+              }
             </div>
             <div>
               <p className="font-semibold text-foreground">{company.name}</p>
@@ -484,161 +486,10 @@ function SuperAdminDashboard({ data }) {
   );
 }
 
-// ─── EVALUADOR DASHBOARD ──────────────────────────────────────────────────────
-
-function EvaluadorDashboard({ data, onNavigate }) {
-  const { evaluator, stats, pendingEmployees, recentEvaluations } = data;
-
-  const statCards = [
-    { label: "Evaluaciones este mes", value: stats.thisMonth, icon: ClipboardList, iconBg: "bg-info-bg",     iconColor: "text-info-fg"    },
-    { label: "Total realizadas",      value: stats.total,     icon: Star,           iconBg: "bg-plan-pro-bg", iconColor: "text-plan-pro-fg"},
-    { label: "Pendientes",            value: stats.pending,   icon: CalendarClock,  iconBg: "bg-warning-bg",  iconColor: "text-warning-fg" },
-    { label: "Puntuación promedio",   value: stats.avgScore != null ? parseFloat(stats.avgScore).toFixed(1) : "—", icon: TrendingUp, iconBg: "bg-success-bg", iconColor: "text-success-fg" },
-  ];
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-start justify-between px-8 py-6 bg-card border-b border-border">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-fg text-sm mt-0.5">
-            Bienvenido, <span className="font-medium text-foreground">{evaluator.name}</span> · {evaluator.position}
-          </p>
-        </div>
-        <button
-          onClick={() => onNavigate?.("evaluaciones-rosa")}
-          className="flex items-center gap-2 bg-primary text-primary-fg font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
-        >
-          <Plus size={16} />
-          Nueva Evaluación
-        </button>
-      </div>
-
-      <div className="flex-1 px-8 py-6 flex flex-col gap-6 overflow-y-auto">
-
-        {/* Stat cards */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {statCards.map((s) => (
-            <div key={s.label} className="bg-card border border-border rounded-xl p-5">
-              <div className={`w-9 h-9 rounded-lg ${s.iconBg} flex items-center justify-center mb-4`}>
-                <s.icon size={18} className={s.iconColor} />
-              </div>
-              <p className="text-3xl font-bold text-foreground">{s.value}</p>
-              <p className="text-muted-fg text-sm mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {/* Empleados pendientes */}
-          <div className="bg-card border border-border rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CalendarClock size={16} className="text-warning-fg" />
-                <h2 className="font-semibold text-foreground">Pendientes de evaluar</h2>
-              </div>
-              <button
-                onClick={() => onNavigate?.("empleados")}
-                className="text-primary text-xs font-medium hover:underline"
-              >
-                Ver todos →
-              </button>
-            </div>
-
-            {pendingEmployees.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <CheckCircle size={32} className="text-success-fg mb-2" />
-                <p className="text-sm text-muted-fg">Todos los empleados están al día</p>
-              </div>
-            ) : (
-              <ul className="flex flex-col divide-y divide-border">
-                {pendingEmployees.map((emp) => (
-                  <li key={emp.id} className="py-3 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-warning-bg flex items-center justify-center shrink-0">
-                        <span className="text-warning-fg text-xs font-bold">
-                          {emp.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{emp.name}</p>
-                        <p className="text-xs text-muted-fg">{emp.area} · {emp.position}</p>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      {emp.daysSinceEval === null ? (
-                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-danger-bg text-danger-fg">
-                          Sin evaluar
-                        </span>
-                      ) : (
-                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-warning-bg text-warning-fg">
-                          Hace {emp.daysSinceEval} días
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {pendingEmployees.length > 0 && (
-              <button
-                onClick={() => onNavigate?.("evaluaciones-rosa")}
-                className="mt-4 w-full flex items-center justify-center gap-2 border border-primary text-primary font-semibold px-4 py-2 rounded-lg text-sm hover:bg-primary/5 transition-colors"
-              >
-                <Plus size={15} />
-                Iniciar evaluación
-              </button>
-            )}
-          </div>
-
-          {/* Mis evaluaciones recientes */}
-          <div className="bg-card border border-border rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-foreground">Mis evaluaciones recientes</h2>
-              <button
-                onClick={() => onNavigate?.("evaluaciones-rosa")}
-                className="text-primary text-xs font-medium hover:underline"
-              >
-                Ver todas →
-              </button>
-            </div>
-
-            {recentEvaluations.length === 0 ? (
-              <p className="text-muted-fg text-sm text-center py-8">Sin evaluaciones aún</p>
-            ) : (
-              <ul className="flex flex-col divide-y divide-border">
-                {recentEvaluations.map((ev, i) => {
-                  const c = RISK_COLORS[ev.riskLevel];
-                  return (
-                    <li key={i} className="py-3 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{ev.employeeName}</p>
-                        <p className="text-xs text-muted-fg">{ev.area} · {ev.date}</p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm font-bold text-foreground">{ev.score.toFixed(1)}</span>
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${c?.badge}`}>
-                          {c?.label}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 
 export default function Home({ onNavigate }) {
-  const { role, loading, error, superData, adminData, evaluatorData } = useHome();
+  const { role, loading, error, superData, adminData } = useHome();
 
   if (loading) {
     return (
@@ -660,10 +511,6 @@ export default function Home({ onNavigate }) {
 
   if (role === "super_admin" && superData) {
     return <SuperAdminDashboard data={superData} />;
-  }
-
-  if (role === "evaluator" && evaluatorData) {
-    return <EvaluadorDashboard data={evaluatorData} onNavigate={onNavigate} />;
   }
 
   if (adminData) {
