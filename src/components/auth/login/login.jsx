@@ -173,14 +173,9 @@ export default function Login() {
 
               {/* Campo: Contraseña */}
               <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-foreground tracking-wide uppercase" htmlFor="password">
-                    Contraseña
-                  </label>
-                  <Link href="/auth/olvide-contrasena" className="text-xs text-primary hover:underline font-medium">
-                    ¿Olvidó su contraseña?
-                  </Link>
-                </div>
+                <label className="text-xs font-semibold text-foreground tracking-wide uppercase" htmlFor="password">
+                  Contraseña
+                </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-fg pointer-events-none">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
