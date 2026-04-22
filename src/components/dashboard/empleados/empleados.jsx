@@ -52,7 +52,13 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
   const [formError, setFormError] = useState("");
 
   function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+      // Limpiar número si cambia el tipo de documento
+      ...(name === "documentType" && { documentNumber: "" }),
+    }));
   }
 
   function handleFirstName(e) {
@@ -68,8 +74,19 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
   }
 
   function handleDocumentNumber(e) {
-    // Solo números — sin letras
-    const val = e.target.value.replace(/\D/g, "");
+    const raw = e.target.value;
+    const type = form.documentType;
+    let val;
+    if (type === "CE" || type === "PA") {
+      // Alfanumérico: letras, números y guión
+      val = raw.replace(/[^a-zA-Z0-9-]/g, "").toUpperCase();
+    } else if (type === "NIT") {
+      // Números y un guión opcional al final
+      val = raw.replace(/[^0-9-]/g, "");
+    } else {
+      // CC, TI, RC y sin tipo: solo números
+      val = raw.replace(/\D/g, "");
+    }
     setForm((prev) => ({ ...prev, documentNumber: val }));
   }
 
@@ -110,6 +127,11 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
 
     if (!form.area.trim()) {
       setFormError("El área es obligatoria.");
+      return;
+    }
+
+    if (!form.phone.trim()) {
+      setFormError("El teléfono es obligatorio.");
       return;
     }
 
@@ -166,7 +188,7 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
       ...(form.documentType.trim()   && { documentType:   form.documentType.trim() }),
       ...(form.documentNumber.trim() && { documentNumber: form.documentNumber.trim() }),
       ...(form.email.trim()          && { email:          form.email.trim() }),
-      ...(form.phone.trim()          && { phone:          form.phone.trim() }),
+      phone: form.phone.trim(),
       ...(form.hireDate              && { hireDate:       form.hireDate }),
     };
 
@@ -230,7 +252,7 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Área *</label>
               <input name="area" value={form.area} onChange={handleChange}
-                className="px-3 py-2 text-sm border border-border rounded-lg bg-backgroDocumentNumberxt-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-foreground">Correo *</label>
@@ -238,7 +260,7 @@ function EmpleadoModal({ empleado, onClose, onGuardar }) {
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-foreground">Teléfono</label>
+              <label className="text-sm font-medium text-foreground">Teléfono *</label>
               <input name="phone" value={form.phone} onChange={handlePhone}
                 placeholder="+57 300 000 0000"
                 className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
+
 const TIPO_LABEL = {
   ROSA:      "ROSA",
   RIESGOS:   "Riesgos",
@@ -42,7 +43,7 @@ export function useReportes() {
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState("");
 
-  useEffect(() => { fetchReportes(); }, []);
+  useEffect(() => { fetchReportes(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchReportes() {
     const token = getToken();

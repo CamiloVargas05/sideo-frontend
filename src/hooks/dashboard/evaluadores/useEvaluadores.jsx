@@ -4,18 +4,12 @@ import { useState, useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
-
 const ROL_LABEL = {
-  ADMIN:       "Administrador",
-  EVALUATOR:   "Evaluador",
-  SUPER_ADMIN: "Super Admin",
-  // lowercase (según lo que devuelve el backend)
-  admin:       "Administrador",
-  evaluator:   "Evaluador",
-  super_admin: "Super Admin",
+  EVALUATOR: "Evaluador",
+  evaluator: "Evaluador",
 };
 
-function mapUsuario(u) {
+function mapEvaluador(u) {
   return {
     id:        u.id,
     nombre:    `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
@@ -24,7 +18,7 @@ function mapUsuario(u) {
     email:     u.email     ?? "",
     phone:     u.phone     ?? "",
     position:  u.position  ?? "",
-    rol:       ROL_LABEL[u.role] ?? u.role ?? "—",
+    rol:       ROL_LABEL[u.role] ?? "Evaluador",
     roleKey:   u.role      ?? "",
     isActive:  u.active    ?? u.isActive ?? true,
     estado:    (u.active   ?? u.isActive ?? true) ? "Activo" : "Inactivo",
@@ -35,14 +29,14 @@ function getToken() {
   return localStorage.getItem("token") ?? sessionStorage.getItem("token");
 }
 
-export function useUsuarios() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState("");
+export function useEvaluadores() {
+  const [evaluadores, setEvaluadores] = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState("");
 
-  useEffect(() => { fetchUsuarios(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchEvaluadores(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function fetchUsuarios() {
+  async function fetchEvaluadores() {
     const token = getToken();
     if (!token) { setLoading(false); return; }
     setLoading(true);
@@ -53,10 +47,14 @@ export function useUsuarios() {
       if (res.ok) {
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.data ?? data.users ?? []);
-        setUsuarios(list.map(mapUsuario));
+        // Solo mostrar evaluadores, excluir admin y super_admin
+        const soloEvaluadores = list.filter(
+          (u) => (u.role ?? "").toLowerCase() === "evaluator"
+        );
+        setEvaluadores(soloEvaluadores.map(mapEvaluador));
       }
     } catch {
-      setError("No se pudieron cargar los usuarios.");
+      setError("No se pudieron cargar los evaluadores.");
     } finally {
       setLoading(false);
     }
@@ -72,7 +70,7 @@ export function useUsuarios() {
         body: JSON.stringify(formData),
       });
       const body = await res.json().catch(() => ({}));
-      if (res.ok) await fetchUsuarios();
+      if (res.ok) await fetchEvaluadores();
       return { ok: res.ok, error: body.message ?? null };
     } catch {
       return { ok: false, error: "Error de conexión." };
@@ -89,7 +87,7 @@ export function useUsuarios() {
         body: JSON.stringify(formData),
       });
       const body = await res.json().catch(() => ({}));
-      if (res.ok) await fetchUsuarios();
+      if (res.ok) await fetchEvaluadores();
       return { ok: res.ok, error: body.message ?? null };
     } catch {
       return { ok: false, error: "Error de conexión." };
@@ -105,7 +103,7 @@ export function useUsuarios() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const body = await res.json().catch(() => ({}));
-      if (res.ok) await fetchUsuarios();
+      if (res.ok) await fetchEvaluadores();
       return { ok: res.ok, error: body.message ?? null };
     } catch {
       return { ok: false, error: "Error de conexión." };
@@ -121,7 +119,7 @@ export function useUsuarios() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const body = await res.json().catch(() => ({}));
-      if (res.ok) await fetchUsuarios();
+      if (res.ok) await fetchEvaluadores();
       return { ok: res.ok, error: body.message ?? null };
     } catch {
       return { ok: false, error: "Error de conexión." };
@@ -143,7 +141,7 @@ export function useUsuarios() {
   }
 
   return {
-    usuarios, loading, error,
+    evaluadores, loading, error,
     handleCrearEvaluador, handleActualizar,
     handleDesactivar, handleReactivar, handleResetPassword,
   };

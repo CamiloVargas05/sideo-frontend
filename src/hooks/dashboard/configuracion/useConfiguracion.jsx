@@ -76,15 +76,15 @@ export function useConfiguracion() {
       position:  stored.position  ?? "",
     });
     // Luego refresca desde la API para traer phone y position completos
-    if (stored.id) fetchUserProfile(stored.id);
+    fetchUserProfile();
     fetchSubscription();
   }, []);
 
-  async function fetchUserProfile(userId) {
+  async function fetchUserProfile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return;
@@ -144,10 +144,10 @@ export function useConfiguracion() {
 
   async function handleGuardarPerfil() {
     const token = getToken();
-    if (!token || !user?.id) return { ok: false };
+    if (!token) return { ok: false };
     setLoadingProfile(true);
     try {
-      const res = await fetch(`${API_URL}/users/${user.id}`, {
+      const res = await fetch(`${API_URL}/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

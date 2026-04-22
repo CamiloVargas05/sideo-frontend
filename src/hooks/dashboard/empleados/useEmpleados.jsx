@@ -60,13 +60,6 @@ function mapSummaryStats(s = {}) {
       valueColor: unassessed > 0 ? "text-warning-fg" : "text-foreground",
       type: "unassessed"
     },
-    { 
-      label: "Alertas",
-      value: String(alertsCount),
-      subtitle: "Últimos 30 días",
-      valueColor: alertsCount > 0 ? "text-danger-fg" : "text-foreground",
-      type: "alerts"
-    },
   ];
 }
 
@@ -108,7 +101,7 @@ export function useEmpleados() {
           setEmpleados(mapped);
           
           // Derivar conteos localmente para evaluador
-          const unassessedCount = mapped.filter(e => !e.riskKey).length;
+          const unassessedCount = mapped.filter(e => !e.totalEvaluations).length;
           
           // Calcular alertas: empleados sin evaluar en 30 días
           const thirtyDaysAgo = new Date();
@@ -134,42 +127,30 @@ export function useEmpleados() {
           fetch(`${API_URL}/employees`,       { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API_URL}/employees/stats`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
+        let localUnassessed = 0;
+
         if (listRes.ok) {
           const data = await listRes.json();
           const list = Array.isArray(data) ? data : (data.data ?? data.employees ?? []);
           const mapped = list.map(mapEmpleado);
           setEmpleados(mapped);
-          
-          // Calcular conteos localmente
-          const unassessedCount = mapped.filter(e => !e.riskKey).length;
-          
-          // Calcular alertas: empleados sin evaluar en 30 días
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-          const alertsCount = mapped.filter(e => {
-            if (e.lastEvaluationDate) {
-              const evalDate = new Date(e.lastEvaluationDate);
-              return evalDate < thirtyDaysAgo;
-            }
-            return true; // Empleados sin evaluación también cuentan como alerta
-          }).length;
-          
-          // Si stats falla, al menos mostrar el total de la lista
-          setSummaryStats(mapSummaryStats({ 
+
+          // Conteo local — fuente de verdad basado en totalEvaluations
+          localUnassessed = mapped.filter(e => !e.totalEvaluations).length;
+
+          setSummaryStats(mapSummaryStats({
             total: data.total ?? list.length,
-            unassessedCount,
-            alertsCount,
+            unassessedCount: localUnassessed,
           }));
         }
         if (statsRes.ok) {
           const s = await statsRes.json();
-          // Acepta total, totalEmployees o totalCount como campo principal
           setSummaryStats(mapSummaryStats({
             ...s,
-            total: s.total ?? s.totalEmployees ?? s.totalCount ?? s.count ?? 0,
-            planCapacity: s.planCapacity ?? s.maxEmployees ?? 10,
-            unassessedCount: s.unassessedCount ?? 0,
-            alertsCount: s.alertsCount ?? 0,
+            total:          s.total ?? s.totalEmployees ?? s.totalCount ?? s.count ?? 0,
+            planCapacity:   s.planCapacity ?? s.maxEmployees ?? 10,
+            // El conteo local (basado en totalEvaluations) es la fuente de verdad
+            unassessedCount: localUnassessed,
           }));
         }
       }

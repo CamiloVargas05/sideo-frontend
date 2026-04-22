@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Settings,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 
 // roles: which roles can see this item. Empty/absent = all roles.
@@ -24,14 +25,20 @@ const navGroups = [
   {
     label: "Gestión",
     items: [
-      { label: "Usuarios",  section: "usuarios",  icon: Users,      roles: ["admin", "super_admin"] },
-      { label: "Empleados", section: "empleados", icon: UserCheck,  roles: ["admin", "super_admin", "evaluator"] },
+      { label: "Evaluadores", section: "evaluadores", icon: Users, roles: ["admin"] },
+      { label: "Empleados", section: "empleados", icon: UserCheck,  roles: ["admin", "evaluator"] },
     ],
   },
   {
     label: "Evaluación",
     items: [
-      { label: "Evaluación ROSA", section: "evaluaciones-rosa", icon: ClipboardList },
+      { label: "Evaluación ROSA", section: "evaluaciones-rosa", icon: ClipboardList, roles: ["evaluator"] },
+    ],
+  },
+  {
+    label: "Facturación",
+    items: [
+      { label: "Suscripción", section: "suscripcion", icon: CreditCard, roles: ["admin"] },
     ],
   },
   {

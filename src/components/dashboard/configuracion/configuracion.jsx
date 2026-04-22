@@ -71,7 +71,7 @@ function PlanSkeleton() {
 }
 
 /* ── Componente principal ── */
-export default function Configuracion() {
+export default function Configuracion({ onNavigate }) {
   const {
     user, profileForm, profileDirty,
     passwordForm, passwordError,
@@ -305,8 +305,8 @@ export default function Configuracion() {
               </div>
             </div>
 
-            {/* Plan */}
-            <div className="bg-card border border-border rounded-xl p-5 flex flex-col gap-4">
+            {/* Plan — solo visible para admin y super_admin */}
+            {(user?.role ?? "").toLowerCase() !== "evaluator" && <div className="bg-card border border-border rounded-xl p-5 flex flex-col gap-4">
               <h2 className="font-semibold text-foreground">Plan Actual</h2>
 
               {loadingSubscription ? (
@@ -353,12 +353,12 @@ export default function Configuracion() {
 
               <button
                 type="button"
-                onClick={() => showToast.info("Redirigiendo a cambio de plan...", { position: "top-right", transition: "bounceIn", duration: 3000 })}
+                onClick={() => onNavigate?.("suscripcion")}
                 className="w-full flex items-center justify-center gap-2 border border-border text-foreground text-sm font-medium py-2 rounded-xl hover:bg-background transition-colors"
               >
                 <RefreshCw size={14} /> Cambiar Plan
               </button>
-            </div>
+            </div>}
 
             {/* Info de empresa (solo lectura) */}
             {user?.companyName && (

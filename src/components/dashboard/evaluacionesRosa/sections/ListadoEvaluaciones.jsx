@@ -6,6 +6,7 @@ import { getRiskLevel } from "../constants/rosaQuestions";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
+
 function getToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("token") ?? sessionStorage.getItem("token");
@@ -20,9 +21,7 @@ export default function ListadoEvaluaciones({
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchEvaluaciones();
-  }, []);
+  useEffect(() => { fetchEvaluaciones(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchEvaluaciones() {
     const token = getToken();

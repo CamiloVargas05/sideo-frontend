@@ -38,6 +38,14 @@
   --rosa-medium: #f59e0b;
   --rosa-high: #f97316;
   --rosa-very-high: #dc2626;
+
+  /* Planes de suscripción */
+  --plan-plus-bg: #fef3c7;
+  --plan-plus-fg: #d97706;
+  --plan-pro-bg:  #dbeafe;
+  --plan-pro-fg:  #2563eb;
+  --plan-max-bg:  #ede9fe;
+  --plan-max-fg:  #7c3aed;
 }
 
 .dark {
@@ -103,6 +111,14 @@
   --color-rosa-medium: var(--rosa-medium);
   --color-rosa-high: var(--rosa-high);
   --color-rosa-very-high: var(--rosa-very-high);
+
+  /* Planes */
+  --color-plan-plus-bg: var(--plan-plus-bg);
+  --color-plan-plus-fg: var(--plan-plus-fg);
+  --color-plan-pro-bg:  var(--plan-pro-bg);
+  --color-plan-pro-fg:  var(--plan-pro-fg);
+  --color-plan-max-bg:  var(--plan-max-bg);
+  --color-plan-max-fg:  var(--plan-max-fg);
 }
 
 /* ─── Estilos Base ────────────────────────────────────────────────────────── */
