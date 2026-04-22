@@ -40,7 +40,8 @@ export function useLogin() {
       storage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (!data.user?.profileCompleted) {
+      // Solo admin ve el formulario de completar perfil
+      if (!data.user?.profileCompleted && data.user?.role === "admin") {
         router.push("/auth/completar-perfil");
       } else {
         router.push("/dashboard");

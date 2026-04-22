@@ -22,10 +22,11 @@ export function useCompletarPerfil() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
 
-  // Verificar si el usuario es SUPER_ADMIN y redirigir al dashboard
+
+  // Solo ADMIN puede completar perfil, SUPER_ADMIN y EVALUATOR van directamente al dashboard
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    if (storedUser.role === "super_admin") {
+    if (storedUser.role === "super_admin" || storedUser.role === "evaluator") {
       router.push("/dashboard");
     }
   }, [router]);
