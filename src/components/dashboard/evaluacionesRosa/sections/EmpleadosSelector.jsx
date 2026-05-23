@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Search, ChevronRight} from "lucide-react";
 import { showToast } from "nextjs-toast-notify";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function getToken() {
   if (typeof window === "undefined") return null;
