@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { showToast } from "nextjs-toast-notify";
 import { mapWizardResponsesToApiBody } from "@/components/dashboard/evaluacionesRosa/utils/rosaMapper";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function getToken() {
   if (typeof window === "undefined") return null;

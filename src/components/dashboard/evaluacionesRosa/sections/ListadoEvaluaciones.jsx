@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Eye } from "lucide-react";
 import { getRiskLevel } from "../constants/rosaQuestions";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
 function getToken() {
